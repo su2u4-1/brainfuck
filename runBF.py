@@ -1,5 +1,4 @@
 import sys
-from typing import Any
 
 
 class my_dict(dict):
@@ -12,30 +11,71 @@ class my_dict(dict):
         return super().__getitem__(key)
 
     def __setitem__(self, key: int, value: int) -> None:
-        if -128 <= value <= 127:
-            return super().__setitem__(key, value)
-        value = value & 0xFF
-        if value > 127:
-            value -= 256
-        return super().__setitem__(key, value)
+        super().__setitem__(key, value % 256)
 
 
 args = sys.argv
-if len(args) > 1 and args[1].endswith == "bf":
-    with open(args[1], "r") as f:
-        code = ""
-        for i in f.read():
-            if i in "<>+-,.[]":
-                code += i
+if len(args) > 1:
+    if args[1].endswith(".bf"):
+        path = args[1]
 else:
-    print("error")
+    path = input()
+
+with open(path, "r") as f:
+    source = f.readlines()
+
+code = ""
+brackets = {}
+stack = []
+n = 0
+for l in source:
+    for c in l:
+        if c in "0123456789":
+            repeat = int(c)
+        if c in "<>+-,.[]":
+            if c == "[":
+                repeat = 1
+                stack.append(n)
+            elif c == "]":
+                repeat = 1
+                t = stack.pop()
+                brackets[n] = t
+                brackets[t] = n
+            code += c * repeat
+            n += 1
+            repeat = 1
+        elif c == "*":
+            break
+code += "E"
 
 space = my_dict({0: 0})
 point = 0
 
-for i in code:
+n = 0
+i = "S"
+while i != "E":
+    i = code[n]
     match i:
         case ">":
             point += 1
         case "<":
             point -= 1
+        case "+":
+            space[point] += 1
+        case "-":
+            space[point] -= 1
+        case ".":
+            print(chr(space[point]), end="")
+        case ",":
+            space[point] = ord(input())
+        case "[":
+            if space[point] == 0:
+                n = brackets[n]
+                continue
+        case "]":
+            if space[point] != 0:
+                n = brackets[n]
+                continue
+        case "E":
+            break
+    n += 1
