@@ -18,6 +18,8 @@ args = sys.argv
 if len(args) > 1:
     if args[1].endswith(".bf"):
         path = args[1]
+    else:
+        print(f"Error: {args[1]} is not brainfuck file.")
 else:
     path = input()
 
@@ -42,7 +44,7 @@ for l in source:
                 brackets[n] = t
                 brackets[t] = n
             code += c * repeat
-            n += 1
+            n += repeat
             repeat = 1
         elif c == "*":
             break
