@@ -14,6 +14,7 @@ class my_dict(dict):
         super().__setitem__(key, value % 256)
 
 
+flag = True
 args = sys.argv
 if len(args) > 1:
     if args[1].endswith(".bf"):
@@ -22,14 +23,19 @@ if len(args) > 1:
         print(f"Error: {args[1]} is not brainfuck file.")
 else:
     path = input()
+    if path == "source":
+        flag = False
+        source = [input()]
 
-with open(path, "r") as f:
-    source = f.readlines()
+if flag:
+    with open(path, "r") as f:
+        source = f.readlines()
 
 code = ""
 brackets = {}
 stack = []
 n = 0
+repeat = 1
 for l in source:
     for c in l:
         if c in "0123456789":
