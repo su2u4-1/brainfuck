@@ -1,8 +1,9 @@
-import sys
+from sys import argv
+from typing import Any
 
 
-class my_dict(dict):
-    def __init__(self, *args, **kwargs) -> None:
+class my_dict(dict[int, int]):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
     def __getitem__(self, key: int) -> int:
@@ -15,25 +16,26 @@ class my_dict(dict):
 
 
 flag = True
-args = sys.argv
-if len(args) > 1:
-    if args[1].endswith(".bf"):
-        path = args[1]
+if len(argv) > 1:
+    if argv[1].endswith(".bf"):
+        path = argv[1]
     else:
-        print(f"Error: {args[1]} is not brainfuck file.")
+        print(f"Error: {argv[1]} is not brainfuck file.")
+        exit()
 else:
     path = input()
     if path == "source":
         flag = False
-        source = [input()]
 
 if flag:
     with open(path, "r") as f:
         source = f.readlines()
+else:
+    source = [input()]
 
 code = ""
-brackets = {}
-stack = []
+brackets: dict[int, int] = {}
+stack: list[int] = []
 n = 0
 repeat = 1
 for l in source:
@@ -86,4 +88,6 @@ while i != "E":
                 continue
         case "E":
             break
+        case _:
+            pass
     n += 1
